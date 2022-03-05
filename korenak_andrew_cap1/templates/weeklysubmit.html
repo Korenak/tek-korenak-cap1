@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="jumbotron">
+  <h4>Submit Weekly Product Sales Records to Database:</h4>
+  <form method="POST">
+      {{ form.hidden_tag() }}
+      {{ form.formyear.label }} {{ form.formyear() }}
+      {{ form.formweek.label}} {{form.formweek()}}
+      {{form.emp.label}} {{form.emp}}
+      {{form.prod.label}}{{form.prod}}
+      {{form.numsold.label}}{{form.numsold}}
+      {{form.warrantysold.label}}{{form.warrantysold}}
+      {{ form.submit() }}
+  </form>
+  {# Display flash messages, if any, for all pages #}
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class='flashes'>
+      {% for message in messages %}<li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+</div>
+<body>
+  <div class="row">
+  <div class="column">
+    <h4>&nbsp&nbsp Sales Team Lead</h4>
+    <ul>
+      <li>EMP234 : Jane Bachmann</li>
+      <li>EMP244: Gina Evans</li>
+      <li>EMP256: Harry Lawson</li>
+      <li>EMP267: Beverly Clement</li>
+      <li>EMP290: Maude Allen</li>
+    </ul>
+  </div>
+  <div class="column">
+    <h4>&nbsp&nbsp Product Codes</h4>
+    <ul>
+      <li>PROD_001: Gator XUV 590M</li>
+      <li>PROD_002: CUV82</li>
+      <li>PROD_003: 1025R Sub-Compact Tractor</li>
+      <li>PROD_004: CT1021 Sub-Compact Tractor</li>
+      <li>PROD_005: UV34 Gas </li>
+      <li>PROD_006: ZT2000 Zero Turn Mower</li>
+      <li>PROD_007: S70 Skid Steer Loader</li>
+      <li>PROD_008: Z930M Ztrack</li>
+    </ul>
+  </div>
+</div>
+
+<body/>
+{% endblock %}
