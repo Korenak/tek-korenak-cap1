@@ -1,8 +1,9 @@
 import os
 import config
 from flask import Flask, render_template, url_for, redirect, flash
-from flask_sqlalchemy import SQLAlchemy
-from forms import SubmitForm
+from flask_sqlalchemy import *
+from sqlalchemy import *
+from forms import SubmitForm, DelForm
 import pymysql
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -26,6 +27,7 @@ EMP_ID( site-drop down selector box?), Year (site-selector with 2021-2030?), Wee
 class sitesales(db.Model):
     __tablename__ = 'sitesales'
 
+
     id = db.Column(db.Integer,primary_key = True)
     sales_year = db.Column(db.Integer)
     sales_week = db.Column(db.Integer)
@@ -38,14 +40,13 @@ class sitesales(db.Model):
 #,db.ForeignKey('employees.emp_id')
 #,db.ForeignKey('products.prod_id')
 #,db.ForeignKey('services.serv_id')
-    def __init__(self,id,year,week,emp_id,prod_code,serv_code):
-        self.id = id
+    def __init__(self,id,sales_year,sales_week,sales_team,prod_code,prod_sold,esp_code,esp_sold):
         self.sales_year = sales_year
         self.sales_week = sales_week
-        self.emp_code = emp_code
+        self.sales_team = sales_team
         self.prod_code = prod_code
         self.prod_sold = prod_sold
-        self.serv_code = esp_code
+        self.esp_code = esp_code
         self.esp_sold = esp_sold
 '''
 
@@ -88,69 +89,64 @@ def weeklysubmit():
     form = SubmitForm()
 
     if form.validate_on_submit():
-        # we have 2 required input fields
-        year = form.formyear.data
-        week = form.formweek.data
-        emp = form.emp.data
-        prod = form.prod.data
-        numsold = form.numsold.data
-        espsold = form.warrantysold.data
-        if prod == "PROD_001":
+        try:
+            id= sitesales.id
+            sales_year = form.formyear.data
+            week = form.formweek.data
+            emp = form.emp.data
+            prod = form.prod.data
+            numsold = form.numsold.data
+            esp_sold = form.warrantysold.data
+            condition = True
+            if condition: prod = "PROD_001"
             esp = "ESP_001"
-        if prod == "PROD_002":
+            if condition: prod = "PROD_002"
             esp = "ESP_002"
-        if prod == "PROD_003":
+            if condition: prod = "PROD_003"
             esp = "ESP_003"
-        if prod == "PROD_004":
+            if condition: prod = "PROD_004"
             esp = "ESP_004"
-        if prod == "PROD_005":
+            if condition: prod = "PROD_005"
             esp = "ESP_005"
-        if prod == "PROD_006":
+            if condition: prod = "PROD_006"
             esp = "ESP_006"
-        if prod == "PROD_007":
+            if condition: prod = "PROD_007"
             esp = "ESP_007"
-        if prod == "PROD_008":
+            if condition: prod = "PROD_008"
             esp = "ESP_008"
-        db.session.add(year)
-        db.session.add(week)
-        db.session.add(emp)
-        db.session.add(prod)
-        db.session.add(numsold)
-        db.session.add(esp)
-        db.session.add(espsold)
-#        db.session.commit()
-        flash(f"For Week {week}, {year}: {numsold} units of {prod} with {espsold} {esp}s has been applied to team {emp}.")
-
-        return redirect(url_for('weeklysubmit'))
-
-    return render_template('weeklysubmit.html', form=form)
+            a = sitesales(id,sales_year, week, emp, prod, numsold, esp, esp_sold)
+            db.session.add(a)
+            db.session.commit()
+            flash(f"For Week {week}, {sales_year}: {numsold} units of {prod} with {esp_sold} {esp}s has been applied to team {emp}.")
+            return redirect(url_for('weeklysubmit'))
+        except:
+            flash("Operation Failed Successfully")
+    return render_template('weeklysubmit.html', form=form )
 
 
 @app.route('/list')
-def list_pup():
-    # Grab a list of puppies from database.
-    puppies = Puppy.query.all()
+def prod_list():
+    last5= sitesales.query.order_by(sitesales.id.desc()).limit(5)
 
-    return render_template('list_pup.html', puppies=puppies)
+    return render_template('prod_list.html', last5=last5 )
 
 
 @app.route('/delete', methods=['GET', 'POST'])
-def del_pup():
+def delorder():
     form = DelForm()
 
     if form.validate_on_submit():
-        id = form.id.data
-        pup = Puppy.query.get(id)
-        db.session.delete(pup)
-        db.session.commit()
+        try:
+            id = form.id.data
+            order = sitesales.query.get(id)
+            db.session.delete(order)
+            db.session.commit()
+            return redirect(url_for('delorder'))
+        except:
+            flash("Please select an Order ID that exists.")
+            return redirect(url_for('delorder'))
 
-        return redirect(url_for('list_pup'))
-    return render_template('delete_pup.html', form=form)
-
-
-
-
-
+    return render_template('delete.html', form=form )
 
 
 

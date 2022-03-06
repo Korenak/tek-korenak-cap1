@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="jumbotron">
+  <h1>Last 5 Submits:</h1>
+  <ul>
+    {% for x in last5  %}
+    <p></p>
+    <li>ID: {{x.id}}&nbsp&nbsp Year: {{x.sales_year}}&nbsp&nbsp Week: {{x.sales_week}}&nbsp&nbsp Team: {{x.sales_team}}&nbsp&nbsp Product: {{x.prod_code}}&nbsp&nbsp Num Sold: {{x.prod_sold}}&nbsp&nbsp Service Pkg: {{x.esp_code}}&nbsp&nbsp Num Sold: {{x.esp_sold}}</li>
+    {% endfor %}
+
+
+    
+  </ul>
+</div>
+{% endblock %}
