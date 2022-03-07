@@ -58,41 +58,41 @@ def weeklysubmit():
     form = SubmitForm()
 
     if form.validate_on_submit():
-#give it a try
-        try:
-            id= sitesales.id
-            sales_year = form.formyear.data
-            week = form.formweek.data
-            emp = form.emp.data
-            prod = form.prod.data
-            numsold = form.numsold.data
-            esp_sold = form.warrantysold.data
-            condition = True
+        id= sitesales.id
+        sales_year = form.formyear.data
+        week = form.formweek.data
+        emp = form.emp.data
+        prod = form.prod.data
+        numsold = form.numsold.data
+        esp_sold = form.warrantysold.data
+        condition = True
 #Since there is only one ESP matched to each PROD. Match them here to reduce
 # number of form boxes and prevent user error. output correct esp to MySQL server
-            if condition: prod = "PROD_001"
+        if  prod == "PROD_001":
             esp = "ESP_001"
-            if condition: prod = "PROD_002"
+        if  prod == "PROD_002":
             esp = "ESP_002"
-            if condition: prod = "PROD_003"
+        if prod == "PROD_003":
             esp = "ESP_003"
-            if condition: prod = "PROD_004"
+        if  prod == "PROD_004":
             esp = "ESP_004"
-            if condition: prod = "PROD_005"
+        if  prod == "PROD_005":
             esp = "ESP_005"
-            if condition: prod = "PROD_006"
+        if  prod == "PROD_006":
             esp = "ESP_006"
-            if condition: prod = "PROD_007"
+        if  prod == "PROD_007":
             esp = "ESP_007"
-            if condition: prod = "PROD_008"
+        if  prod == "PROD_008":
             esp = "ESP_008"
+# try to add to database
+        try:
             a = sitesales(id,sales_year, week, emp, prod, numsold, esp, esp_sold)
             db.session.add(a)
             db.session.commit()
 # sucess flash message
             flash(f"For Week {week}, {sales_year}: {numsold} units of {prod} with {esp_sold} {esp}s has been applied to team {emp}.")
             return redirect(url_for('weeklysubmit'))
-#if try fails
+# if try fails
         except:
 # fail flash message
             flash("Operation Failed Successfully")
