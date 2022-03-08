@@ -19,31 +19,32 @@ app.config['SQLALCHEMY_DATABASE_URI'] = conn
 db = SQLAlchemy(app)
 
 
-#class for sitesales table generation
-class sitesales(db.Model):
-    __tablename__ = 'sitesales'
+#class for site_normal table generation
+
+''' Attempt at Normal form output for database'''
+
+class site_normal(db.Model):
+    __tablename__ = 'site_normal'
 
 
     id = db.Column(db.Integer,primary_key = True)
     sales_year = db.Column(db.Integer)
     sales_week = db.Column(db.Integer)
-    sales_team= db.Column(db.Text)
-    prod_code= db.Column(db.Text)
-    prod_sold = db.Column(db.Integer)
-    esp_code= db.Column(db.Text)
-    esp_sold= db.Column(db.Integer)
-# Stretch goal: foreign keys
-#
-    def __init__(self,id,sales_year,sales_week,sales_team,prod_code,prod_sold,esp_code,esp_sold):
+    emp_id= db.Column(db.Integer)
+    item_id= db.Column(db.Integer)
+    number_sold = db.Column(db.Integer)
+
+    def __init__(self,id,sales_year,sales_week,emp_id,item_id,number_sold):
         self.sales_year = sales_year
         self.sales_week = sales_week
-        self.sales_team = sales_team
-        self.prod_code = prod_code
-        self.prod_sold = prod_sold
-        self.esp_code = esp_code
-        self.esp_sold = esp_sold
+        self.emp_id = emp_id
+        self.item_id = item_id
+        self.number_sold = number_sold
+
 
 db.create_all()
+
+
 
 #######################################SITE############################
 
@@ -54,43 +55,63 @@ def index():
 
 # order submission page
 @app.route('/add', methods=['GET', 'POST'])
+
 def weeklysubmit():
     form = SubmitForm()
 
     if form.validate_on_submit():
-        id= sitesales.id
+        id= site_normal.id
         sales_year = form.formyear.data
         week = form.formweek.data
         emp = form.emp.data
         prod = form.prod.data
         numsold = form.numsold.data
-        esp_sold = form.warrantysold.data
+        numsold2 = form.warrantysold.data
         condition = True
-#Since there is only one ESP matched to each PROD. Match them here to reduce
-# number of form boxes and prevent user error. output correct esp to MySQL server
+#Taking form box input and matching to normal id values for db normalization
         if  prod == "PROD_001":
-            esp = "ESP_001"
+            normprod = 1
+            normprod2 = 9
         if  prod == "PROD_002":
-            esp = "ESP_002"
+            normprod = 2
+            normprod2 = 10
         if prod == "PROD_003":
-            esp = "ESP_003"
+            normprod = 3
+            normprod2 = 11
         if  prod == "PROD_004":
-            esp = "ESP_004"
+            normprod = 4
+            normprod2 = 12
         if  prod == "PROD_005":
-            esp = "ESP_005"
+            normprod = 5
+            normprod2 = 13
         if  prod == "PROD_006":
-            esp = "ESP_006"
+            normprod = 6
+            normprod2 = 14
         if  prod == "PROD_007":
-            esp = "ESP_007"
+            normprod = 7
+            normprod2 = 15
         if  prod == "PROD_008":
-            esp = "ESP_008"
+            normprod = 8
+            normprod2 = 16
+        if  emp == "EMP234":
+            normemp = 1
+        if  emp == "EMP244":
+            normemp = 2
+        if  emp == "EMP256":
+            normemp = 3
+        if  emp == "EMP267":
+            normemp = 4
+        if  emp == "EMP290":
+            normemp = 5
 # try to add to database
         try:
-            a = sitesales(id,sales_year, week, emp, prod, numsold, esp, esp_sold)
+            a = site_normal(id,sales_year, week, normemp, normprod, numsold)
+            b =site_normal(id,sales_year, week, normemp, normprod2, numsold2)
             db.session.add(a)
+            db.session.add(b)
             db.session.commit()
 # sucess flash message
-            flash(f"For Week {week}, {sales_year}: {numsold} units of {prod} with {esp_sold} {esp}s has been applied to team {emp}.")
+            flash(f"For Week {week}, {sales_year}: {numsold} units of {prod} with {numsold2} Service Plans applied to team {emp}.")
             return redirect(url_for('weeklysubmit'))
 # if try fails
         except:
@@ -98,36 +119,31 @@ def weeklysubmit():
             flash("Operation Failed Successfully")
     return render_template('weeklysubmit.html', form=form )
 
+
+
+
 # Recent orders page
-@app.route('/list')
+@app.route('/list', methods=['GET', 'POST'])
 def prod_list():
-# display last 5 entires in sitsales by ID
-    last5= sitesales.query.order_by(sitesales.id.desc()).limit(5)
-
-    return render_template('prod_list.html', last5=last5 )
-
-# delete order page
-@app.route('/delete', methods=['GET', 'POST'])
-def delorder():
     form = DelForm()
-
+    last6= site_normal.query.order_by(site_normal.id.desc()).limit(6)
     if form.validate_on_submit():
+        last2= site_normal.query.order_by(site_normal.id.desc()).limit(2)
 #try statement
         try:
-            id = form.id.data
-            order = sitesales.query.get(id)
-            db.session.delete(order)
-            db.session.commit()
+            for x in last2:
+                db.session.delete(x)
+                db.session.commit()
 # success flash message
-            flash(f"Order: {id}, successfully deleted")
-            return redirect(url_for('delorder'))
+            flash(f"Most Recent Order Pair Deleted")
+            return redirect(url_for('prod_list'))
 #if try fails
         except:
 # fail flash message
             flash("Please select an Order ID that exists.")
-            return redirect(url_for('delorder'))
+            return redirect(url_for('prod_list'))
 
-    return render_template('delete.html', form=form )
+    return render_template('prod_list.html', form=form, last6=last6)
 
 
 if __name__ == '__main__':

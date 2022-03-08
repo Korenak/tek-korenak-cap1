@@ -1,15 +1,67 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="jumbotron">
-  <h1>Last 5 Submits:</h1>
+  <div class="row">
+  <div class="column">
+    <h4>&nbsp&nbsp Last 3 Submission Pairs: ESP and ITEM</h4>
+    <ul>
+      {% for x in last6 %}
+      <p></p>
+      <li>ID: {{x.id}}&nbsp&nbsp Year: {{x.sales_year}}&nbsp&nbsp Week: {{x.sales_week}}&nbsp&nbsp Team: {{x.emp_id}}&nbsp&nbsp Product: {{x.item_id}}&nbsp&nbsp Num Sold: {{x.number_sold}}</li>
+      {% endfor %}
+  </div>
+
+  </div>
+    <h4>Remove Top 2 Order IDs:<br> (Most Recent Order Submission)</h4>
+    <form method="POST">
+      {{ form.hidden_tag() }}
+
+      {{ form.submit() }}
+    </form>
+    {# Display flash messages, if any, for all pages #}
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class='flashes'>
+        {% for message in messages %}<li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+</div>
+<div class="row">
+<div class="column">
+  <h4>&nbsp&nbsp Sales Team Lead</h4>
   <ul>
-    {% for x in last5  %}
-    <p></p>
-    <li>ID: {{x.id}}&nbsp&nbsp Year: {{x.sales_year}}&nbsp&nbsp Week: {{x.sales_week}}&nbsp&nbsp Team: {{x.sales_team}}&nbsp&nbsp Product: {{x.prod_code}}&nbsp&nbsp Num Sold: {{x.prod_sold}}&nbsp&nbsp Service Pkg: {{x.esp_code}}&nbsp&nbsp Num Sold: {{x.esp_sold}}</li>
-    {% endfor %}
-
-
-    
+    <li>EMP234 : Team: 1</li>
+    <li>EMP244: Team: 2</li>
+    <li>EMP256: Team: 3</li>
+    <li>EMP267: Team: 4</li>
+    <li>EMP290: Team: 5</li>
   </ul>
 </div>
+<div class="column">
+  <h4>&nbsp&nbsp Product Codes</h4>
+  <ul>
+    <li>PROD_001: Product: 1</li>
+    <li>PROD_002: Product: 2</li>
+    <li>PROD_003: Product: 3</li>
+    <li>PROD_004: Product: 4</li>
+    <li>PROD_005: Product: 5 </li>
+    <li>PROD_006: Product: 6</li>
+    <li>PROD_007: Product: 7</li>
+    <li>PROD_008: Product: 8</li>
+    <li>ESP_001: Product: 9</li>
+    <li>ESP_002: Product: 10</li>
+    <li>ESP_003: Product: 11</li>
+    <li>ESP_004: Product: 12</li>
+    <li>ESP_005: Product: 13 </li>
+    <li>ESP_006: Product: 14</li>
+    <li>ESP_007: Product: 15</li>
+    <li>ESP_008: Product: 16</li>
+
+  </ul>
+</div>
+</div>
+
+<body/>
 {% endblock %}
