@@ -82,3 +82,21 @@ else:
     print("Table %s created successfully."%tableName);
 finally:
     dbConn.close()
+
+data= pd.read_csv('csvs\OLAPdenorm.csv')
+
+x = pd.DataFrame(data)
+
+dbConn = engine.connect()
+tableName = "big_ugly"
+y = pd.DataFrame(data=x)
+try:
+    frame = y.to_sql(tableName, dbConn, if_exists='replace');
+except ValueError as vx:
+    print(vx)
+except Exception as ex:
+    print(ex)
+else:
+    print("Table %s created successfully."%tableName);
+finally:
+    dbConn.close()
